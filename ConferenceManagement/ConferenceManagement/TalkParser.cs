@@ -30,16 +30,16 @@ namespace ConferenceManagement
 
     public static class TalkAnalizer
     {
-        public static double GetDuration(string topic, string line)
+        public static int GetDuration(string topic, string line)
         {
-            double duration;
+            int duration;
             if (!topic.Contains("lightning") && line.Contains("lightning"))
             {
                 duration = 5;
             }
             else
             {
-                duration = Convert.ToDouble(Regex.Split(line, @"\D+")[1]);
+                duration = Convert.ToInt32(Regex.Split(line, @"\D+")[1]);
             }
             return duration;
         }
@@ -54,7 +54,7 @@ namespace ConferenceManagement
             }
             else
             {
-                var topic = Regex.Match(line, @"([|A-Z|a-z| ]*)").Groups[0].ToString();
+                var topic = Regex.Match(line, @"([-a-zA-Z ]+)").Groups[0].ToString();
                 return topic.Trim();
             }
         }

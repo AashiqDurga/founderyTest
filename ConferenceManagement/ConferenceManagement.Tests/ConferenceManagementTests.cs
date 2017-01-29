@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.Remoting.Services;
 using NUnit.Framework;
 
 namespace ConferenceManagement.Tests
@@ -42,27 +44,70 @@ namespace ConferenceManagement.Tests
         [Test]
         public void GivenAListOfTalks_WhenCreatingTheMorningSession_ThenCreateASessionFor180Minutes()
         {
-            var listOfTalks = new List<Talk>()
+            var listOfTalks = getListOfTalks();
+            var factory = new SessionFactory();
+
+            var morningSession = factory.CreateMorningSession(listOfTalks);
+
+            Assert.That(morningSession.Sum(x => x.Duration), Is.EqualTo(180));
+        }
+
+        [Test]
+        public void GivenAListOfTalks_WhenCreatingTheAfternoon_ThenCreateASessionLessThanOrEqualTo240Minutes()
+        {
+            var listOfTalks = getListOfTalks();
+            var factory = new SessionFactory();
+
+            var afternoonSession = factory.CreateAfternoonSession(listOfTalks);
+
+            Assert.That(afternoonSession.Sum(x => x.Duration), Is.LessThanOrEqualTo(240));
+        }
+
+        [Test]
+        public void IfTrackHasReachedCapacity_ThenCreateNewTrack()
+        {
+
+            var trackService = new TrackService();
+            var traks = trackService.CreateTracks(getListOfTalks());
+
+            Assert.That(traks.Count, Is.GreaterThanOrEqualTo(1));
+
+        }
+
+        [Test]
+        public void WhenCreatingATrack_MakeSureEachSessionHasNoDuplicates()
+        {
+            var trackService = new TrackService();
+
+            var track = trackService.CreateTracks(getListOfTalks());
+
+            Assert.That(track.First().MorningSesion, Is.Unique);
+            Assert.That(track.First().AfternoonSession, Is.Unique);
+        }
+
+        private List<Talk> getListOfTalks()
+        {
+            return new List<Talk>()
             {
                 new Talk("Writing Fast Tests Against Enterprise Rails", 60),
-                new Talk("Overdoing it in Python", 60),
-                new Talk("Lua for the Masses", 60),
-                new Talk("Ruby Errors from Mismatched Gem Versions", 60),
-                new Talk("Common Ruby Errors", 60),
-                new Talk("Rails for Python Developers", 60),
+                new Talk("Overdoing it in Python", 45),
+                new Talk("Lua for the Masses", 30),
+                new Talk("Ruby Errors from Mismatched Gem Versions", 45),
+                new Talk("Common Ruby Errors", 45),
+                new Talk("Rails for Python Developers", 5),
                 new Talk("Communicating Over Distance", 60),
-                new Talk("Accounting-Driven Development", 60),
-                new Talk("Woah", 60),
-                new Talk("Sit Down and Write", 60),
+                new Talk("Accounting-Driven Development", 45),
+                new Talk("Woah", 30),
+                new Talk("Sit Down and Write", 45),
                 new Talk("Pair Programming vs Noise", 60),
                 new Talk("Rails Magic", 60),
                 new Talk("Ruby on Rails: Why We Should Move On", 60),
-                new Talk("Clojure Ate Scala (on my project)", 60),
-                new Talk("Programming in the Boondocks of Seattle", 60),
-                new Talk("Ruby vs. Clojure for Back-End Development", 60),
+                new Talk("Clojure Ate Scala (on my project)", 45),
+                new Talk("Programming in the Boondocks of Seattle", 30),
+                new Talk("Ruby vs. Clojure for Back-End Development", 30),
                 new Talk("Ruby on Rails Legacy App Maintenance", 60),
-                new Talk("A World Without HackerNews", 60),
-                new Talk("User Interface CSS in Rails Apps ", 60),
+                new Talk("A World Without HackerNews", 30),
+                new Talk("User Interface CSS in Rails Apps ", 30),
             };
         }
     }
