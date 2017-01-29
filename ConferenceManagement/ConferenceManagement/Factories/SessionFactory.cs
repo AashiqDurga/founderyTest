@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using ConferenceManagement.Entities;
 
-namespace ConferenceManagement
+namespace ConferenceManagement.Factories
 {
     public class SessionFactory
     {
@@ -25,9 +26,8 @@ namespace ConferenceManagement
 
             foreach (var talk in listOfTalks)
             {
-                if (session.Sum(x => x.Duration) != 180 && currentDurationofsessionPlusTalk(session,talk) < 180)
+                if (session.Sum(x => x.Duration) != 180 && CurrentDurationofsessionPlusTalk(session,talk) < 180)
                 {
-
                     session.Add(talk);
                 }
             }
@@ -40,7 +40,7 @@ namespace ConferenceManagement
 
             foreach (var talk in listOfTalksExcludingMorningTalks)
             {
-                if (session.Sum(x => x.Duration) < 240 && currentDurationofsessionPlusTalk(session, talk) < 240)
+                if (session.Sum(x => x.Duration) < 240 && CurrentDurationofsessionPlusTalk(session, talk) < 240)
                 {
                     session.Add(talk);
                 }
@@ -49,7 +49,7 @@ namespace ConferenceManagement
             return session;
         }
 
-        private int currentDurationofsessionPlusTalk(List<Talk> session, Talk talk)
+        private static int CurrentDurationofsessionPlusTalk(ICollection<Talk> session, Talk talk)
         {
             session.Add(talk);
             var durationcount = session.Sum(x => x.Duration);
@@ -58,7 +58,7 @@ namespace ConferenceManagement
             return durationcount;
         }
 
-        private List<Talk> GetListOfTalksNotInMorning(List<Talk> talks, List<Talk> morningSession)
+        private static List<Talk> GetListOfTalksNotInMorning(IEnumerable<Talk> talks, List<Talk> morningSession)
         {
             var result = talks.Where(talk => morningSession.All(m => m.Topic != talk.Topic)).ToList();
             return result;

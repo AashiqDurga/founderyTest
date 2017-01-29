@@ -1,7 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Runtime.Remoting.Services;
+using System.Reflection;
+using ConferenceManagement.Entities;
+using ConferenceManagement.Factories;
+using ConferenceManagement.Helpers;
+using ConferenceManagement.Services;
 using NUnit.Framework;
 
 namespace ConferenceManagement.Tests
@@ -9,12 +14,10 @@ namespace ConferenceManagement.Tests
     [TestFixture]
     public class ConferenceManagementTests
     {
-
         [Test]
         public void GivenALineContaining_lighning_WhenParsing_ReturnTheTopicIfLightningIsTheDuration()
         {
             var line = "Rails for Python Developers lightning";
-
             var topic = TalkAnalizer.GetTopic(line);
 
             Assert.That(topic, Is.EqualTo("Rails for Python Developers"));
@@ -24,7 +27,6 @@ namespace ConferenceManagement.Tests
         public void GivenALineNOtContaining_lighning_WhenParsing_ReturnTheTopic()
         {
             var line = "Writing Fast Tests Against Enterprise Rails 60min";
-
             var topic = TalkAnalizer.GetTopic(line);
 
             Assert.That(topic, Is.EqualTo("Writing Fast Tests Against Enterprise Rails"));
@@ -35,8 +37,10 @@ namespace ConferenceManagement.Tests
         {
 
             var talksParser = new TalkParser();
+            var path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().CodeBase);
 
-            var result = talksParser.Parse(@"C:\src\FounderyTest\founderyTest\ConferenceManagement\ConferenceManagement\input.txt");
+            var localPath = new Uri(path).LocalPath;
+            var result = talksParser.Parse(localPath + @"\input.txt");
 
             Assert.That(result.Count, Is.GreaterThanOrEqualTo(1));
         }
@@ -49,7 +53,7 @@ namespace ConferenceManagement.Tests
 
             var morningSession = factory.CreateMorningSession(listOfTalks);
 
-            Assert.That(morningSession.Sum(x => x.Duration), Is.EqualTo(180));
+            Assert.That(morningSession.Sum(x => x.Duration), Is.LessThanOrEqualTo(180));
         }
 
         [Test]
@@ -66,19 +70,16 @@ namespace ConferenceManagement.Tests
         [Test]
         public void IfTrackHasReachedCapacity_ThenCreateNewTrack()
         {
-
             var trackService = new TrackService();
             var traks = trackService.CreateTracks(getListOfTalks());
 
             Assert.That(traks.Count, Is.GreaterThanOrEqualTo(1));
-
         }
 
         [Test]
         public void WhenCreatingATrack_MakeSureEachSessionHasNoDuplicates()
         {
             var trackService = new TrackService();
-
             var track = trackService.CreateTracks(getListOfTalks());
 
             Assert.That(track.First().MorningSesion, Is.Unique);

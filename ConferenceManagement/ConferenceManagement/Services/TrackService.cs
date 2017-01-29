@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using ConferenceManagement.Entities;
+using ConferenceManagement.Factories;
 
-namespace ConferenceManagement
+namespace ConferenceManagement.Services
 {
     public class TrackService
     {
@@ -11,17 +13,15 @@ namespace ConferenceManagement
             var track = CreateTrack(talks);
             tracks.Add(track);
 
-            if (GetListOfTalksNotInPreviousTrack(talks, track).Any())
-            {
-                var talksNotInPrevioustrack = GetListOfTalksNotInPreviousTrack(talks, track);
-                var newTrack = CreateTrack(talksNotInPrevioustrack);
-                tracks.Add(newTrack);
-            }
+            if (!GetListOfTalksNotInPreviousTrack(talks, track).Any()) return tracks;
+            var talksNotInPrevioustrack = GetListOfTalksNotInPreviousTrack(talks, track);
+            var newTrack = CreateTrack(talksNotInPrevioustrack);
+            tracks.Add(newTrack);
 
             return tracks;
         }
 
-        private Track CreateTrack(List<Talk> talks)
+        private static Track CreateTrack(List<Talk> talks)
         {
             var track = new Track();
             var factory = new SessionFactory();
@@ -32,12 +32,11 @@ namespace ConferenceManagement
             return track;
         }
 
-        private List<Talk> GetListOfTalksNotInPreviousTrack(List<Talk> talks, Track track)
+        private static List<Talk> GetListOfTalksNotInPreviousTrack(IEnumerable<Talk> talks, Track track)
         {
             var trackTalks = new List<Talk>();
             trackTalks.AddRange(track.MorningSesion);
             trackTalks.AddRange(track.AfternoonSession);
-
 
             var result = talks.Where(talk => trackTalks.All(m => m.Topic != talk.Topic)).ToList();
             return result;

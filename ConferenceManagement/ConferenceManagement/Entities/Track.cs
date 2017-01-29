@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ConferenceManagement
+namespace ConferenceManagement.Entities
 {
     public class Track
     {

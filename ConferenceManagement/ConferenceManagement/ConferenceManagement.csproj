@@ -45,20 +45,22 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Session.cs" />
-    <Compile Include="SessionFactory.cs" />
-    <Compile Include="Talk.cs" />
-    <Compile Include="TalkParser.cs" />
-    <Compile Include="Track.cs" />
-    <Compile Include="TrackService.cs" />
+    <Compile Include="Entities\Session.cs" />
+    <Compile Include="Factories\SessionFactory.cs" />
+    <Compile Include="Entities\Talk.cs" />
+    <Compile Include="Helpers\TalkAnalizer.cs" />
+    <Compile Include="Helpers\TalkParser.cs" />
+    <Compile Include="Entities\Track.cs" />
+    <Compile Include="Services\TrackService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="input.txt">
+    <EmbeddedResource Include="input.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+      <Generator>input</Generator>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

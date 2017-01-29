@@ -1,4 +1,4 @@
-﻿namespace ConferenceManagement
+﻿namespace ConferenceManagement.Entities
 {
     public class Talk
     {

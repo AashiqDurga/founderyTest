@@ -1,39 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Text.RegularExpressions;
 
-namespace ConferenceManagement
+namespace ConferenceManagement.Helpers
 {
-    public class TalkParser
-    {
-        public List<Talk> Parse(string inputTxtFilePath)
-        {
-            string line;
-            var talks = new List<Talk>();
-
-            StreamReader file = new StreamReader(inputTxtFilePath);
-
-            while ((line = file.ReadLine()) != null)
-            {
-                var topic = TalkAnalizer.GetTopic(line);
-                var duration = TalkAnalizer.GetDuration(topic, line);
-
-                talks.Add(new Talk(topic, duration));
-            }
-
-            file.Close();
-            return talks;
-        }
-
-    }
-
     public static class TalkAnalizer
     {
+        private const string Lightning = "lightning";
+
         public static int GetDuration(string topic, string line)
         {
             int duration;
-            if (!topic.Contains("lightning") && line.Contains("lightning"))
+            if (!topic.Contains(Lightning) && line.Contains(Lightning))
             {
                 duration = 5;
             }
@@ -46,7 +23,7 @@ namespace ConferenceManagement
 
         public static string GetTopic(string line)
         {
-            if (line.Contains("lightning"))
+            if (line.Contains(Lightning))
             {
                 var topic = Regex.Split(line, "\\blightning\\b");
                 return topic[0].Trim();
@@ -58,6 +35,5 @@ namespace ConferenceManagement
                 return topic.Trim();
             }
         }
-
     }
 }
